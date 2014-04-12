@@ -28,7 +28,6 @@ public class Player : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D other) {
 		if (!barrel_fix && other.CompareTag ("Barrel")) {
-			Debug.Log("t1");
 			in_barrel = true;
 			barrel_fix = true;
 			cannon = other.gameObject;
@@ -51,8 +50,9 @@ public class Player : MonoBehaviour {
 	void Fire(float strength){
 		//rigidbody2D.isKinematic = false;
 		rigidbody2D.gravityScale = 1;
-		float t1 = Mathf.Sin(transform.rotation.z + 90);
-		float t2 = Mathf.Cos(transform.rotation.z + 90);
+		float t1 = Mathf.Sin((transform.eulerAngles.z + 90) * Mathf.PI / 180f);
+		float t2 = Mathf.Cos((transform.eulerAngles.z + 90) * Mathf.PI / 180f);
+
 		rigidbody2D.AddForce(new Vector2(strength * t2, strength * t1));
 		in_barrel = false;
 	}
