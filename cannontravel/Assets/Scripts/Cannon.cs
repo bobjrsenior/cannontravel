@@ -11,7 +11,7 @@ public class Cannon : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		Random.seed = (int) (Random.Range(1,15) + Time.time * Random.Range (1, 10));
+		Random.seed = (int) (System.DateTime.Now.Ticks);
 		has_player = false;
 		dir = (int) Mathf.Round(Random.Range (0, 1));
 		rotate_speed = Random.Range (80, 150);
