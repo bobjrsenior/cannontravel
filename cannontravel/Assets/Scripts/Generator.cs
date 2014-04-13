@@ -43,8 +43,9 @@ public class Generator : MonoBehaviour {
 	void Update () {
 		int x_pos = (int) (player.transform.position.x);
 		int y_pos = (int)(player.transform.position.y);
-		if(x_pos % 16 == 0 && !(x_pos == 0 && y_pos == 0)){
-			Vector2 temp = new Vector2(x_pos, cur_y);
+		if(x_pos % 8 == 0 && !(x_pos == 0 && y_pos == 0)){
+			cur_x = x_pos;
+			Vector2 temp = new Vector2(x_pos + Mathf.Sign(x_pos) * 24, cur_y);
 			bool check = true;
 			foreach(Vector2 e in drawn){
 				if(e.Equals(temp)){
@@ -56,6 +57,21 @@ public class Generator : MonoBehaviour {
 				Gen (temp);
 			}
 		}
+		if(y_pos % 8 == 0 && !(x_pos == 0 && y_pos == 0)){
+			cur_y = y_pos;
+			Vector2 temp = new Vector2(cur_x, y_pos + Mathf.Sign(y_pos) * 24);
+			bool check = true;
+			foreach(Vector2 e in drawn){
+				if(e.Equals(temp)){
+					check = false;
+					break;
+				}
+			}
+			if(check){
+				Gen (temp);
+			}
+		}
+
 	}
 
 
@@ -73,7 +89,7 @@ public class Generator : MonoBehaviour {
 			bool run = false;
 			do{
 				run = false;
-				temp = new Vector2(Random.Range(-16, 16), Random.Range(-16, 16));
+				temp = new Vector2(Random.Range(-15, 15), Random.Range(-15, 15));
 				if(Vector2.Distance(temp, player.transform.position) < 2){
 					run = true;
 				}
@@ -93,10 +109,43 @@ public class Generator : MonoBehaviour {
 	}
 
 	void Gen(Vector2 point){
+		drawn [d_size] = point;
+		d_size ++;
+		if(d_size == drawn.Length){
+			inc_draws();
+		}
+		int dist = (int) Vector2.Distance (Vector2.zero, point);
+		float chance = .8f - (.05f * dist / 16);
+		if(chance < .1){
+			chance = .1f;
+		}
 		int spawn = 0;
 		for (int e = 0; e < max_cannons; e ++) {
-			if(cannon_chance > Random.Range(0, 1)){
+			if(chance > Random.Range(0, 1)){
 				spawn ++;
+			}
+		}
+		if(spawn == 0){
+			spawn = 1;
+		}
+
+		for(int e = 0; e < spawn; e ++){
+			Vector2 temp;
+			bool run = false;
+			do{
+				run = false;
+				temp = new Vector2(Random.Range(point.x - 15, point.x + 15), Random.Range(point.y - 15, point.y + 15));
+				for(int a = 1; a <= e; a ++){
+					if(Vector2.Distance(temp, cannons[size - a].transform.position) < 2){
+						run = true;
+					}
+				}
+			}
+			while(run);
+			cannons[size] = Instantiate (cannon, temp, Quaternion.identity) as GameObject;
+			size ++;
+			if(size == cannons.Length){
+				inc_cannons();
 			}
 		}
 	}
