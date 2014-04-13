@@ -11,10 +11,11 @@ public class Cannon : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		Random.seed = (int) (Random.Range(1,15) + Time.time * Random.Range (1, 10));
 		has_player = false;
 		dir = (int) Mathf.Round(Random.Range (0, 1));
-		rotate_speed = Random.Range (20, 50);
-		strength = 100;
+		rotate_speed = Random.Range (80, 150);
+		strength = Random.Range(700, 1250);
 	}
 	
 	// Update is called once per frame
@@ -30,12 +31,14 @@ public class Cannon : MonoBehaviour {
 				has_player = false;
 				player.SendMessage("Fire", strength);
 			}
+			if(Vector2.Distance(gameObject.transform.position, player.transform.position) > 2){
+				has_player = false;
+			}
 		}
 	}
 
 	void OnTriggerEnter2D(Collider2D other) {
 		if (other.CompareTag ("Player")) {
-			Debug.Log("t2");
 			has_player = true;
 			player = other.gameObject;
 		}
