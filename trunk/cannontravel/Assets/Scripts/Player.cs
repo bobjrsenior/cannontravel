@@ -3,18 +3,35 @@ using System.Collections;
 
 public class Player : MonoBehaviour {
 
+	//Cannon Stuff (Cannon = Barrel)
 	public bool in_barrel;
 	private GameObject cannon;
 	private bool barrel_fix;
 
+	//GUI Prefabs
+	public GUIText gui_text_prefab;
+	public GUITexture gui_texture_prefab;
+
+	//Stats/GUI Objects
+	private GUIText fires;
+	public int fire_count;
+	private GUIText height_gui;
+
 	// Use this for initialization
 	void Start () {
+		fire_count = 0;
+		fires = Instantiate (gui_text_prefab, new Vector2 (.05f, .9f), Quaternion.identity) as GUIText;
+		fires.guiText.fontSize = 24;
+		height_gui = Instantiate (gui_text_prefab, new Vector2 (.05f, .97f), Quaternion.identity) as GUIText;
+		height_gui.guiText.fontSize = 24;
 		in_barrel = false;
 		barrel_fix = false;
+		Update_GUI ();
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
+		height_gui.guiText.text = "Height: " + (int) (transform.position.y);
 		if (in_barrel) {
 			transform.position = cannon.transform.position;
 			transform.rotation = cannon.transform.rotation;
@@ -55,5 +72,12 @@ public class Player : MonoBehaviour {
 
 		rigidbody2D.AddForce(new Vector2(strength * t2, strength * t1));
 		in_barrel = false;
+		fire_count ++;
+		Update_GUI ();
+	}
+
+	void Update_GUI(){
+		fires.guiText.text = "Times Fired: " + fire_count;
+		height_gui.guiText.text = "Height: " + (int) (transform.position.y);
 	}
 }
