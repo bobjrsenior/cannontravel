@@ -43,9 +43,15 @@ public class Generator : MonoBehaviour {
 	void Update () {
 		int x_pos = (int) (player.transform.position.x);
 		int y_pos = (int)(player.transform.position.y);
-		if(x_pos % 8 == 0 && !(x_pos == 0 && y_pos == 0)){
+		if(x_pos % 8 == 0 && x_pos % 16 != 0){
 			cur_x = x_pos;
-			Vector2 temp = new Vector2(x_pos + Mathf.Sign(x_pos) * 24, cur_y);
+		}
+		if(y_pos % 8 == 0 && y_pos % 16 != 0){
+			cur_y = y_pos;
+		}
+		if(x_pos % 8 == 0 && x_pos % 16 != 0 && cur_y != 0){
+			cur_x = x_pos;
+			Vector2 temp = new Vector2(x_pos + Mathf.Sign(x_pos) * 24, cur_y + Mathf.Sign(cur_y) * 24);
 			bool check = true;
 			foreach(Vector2 e in drawn){
 				if(e.Equals(temp)){
@@ -57,9 +63,9 @@ public class Generator : MonoBehaviour {
 				Gen (temp);
 			}
 		}
-		if(y_pos % 8 == 0 && !(x_pos == 0 && y_pos == 0)){
+		if(y_pos % 8 == 0 && y_pos % 16 != 0 && cur_x != 0){
 			cur_y = y_pos;
-			Vector2 temp = new Vector2(cur_x, y_pos + Mathf.Sign(y_pos) * 24);
+			Vector2 temp = new Vector2(cur_x + Mathf.Sign(cur_x) * 24, y_pos + Mathf.Sign(y_pos) * 24 );
 			bool check = true;
 			foreach(Vector2 e in drawn){
 				if(e.Equals(temp)){
@@ -81,8 +87,8 @@ public class Generator : MonoBehaviour {
 		cur_x = 0;
 		cur_y = 0;
 		int spawn = 15;
-		cannons [size] = Instantiate (cannon, new Vector2 (0, 0), Quaternion.identity) as GameObject;
 		player = Instantiate (player_prefab, new Vector2 (0, 2), Quaternion.identity) as GameObject;
+		cannons [size] = Instantiate (cannon, new Vector2 (0, 0), Quaternion.identity) as GameObject;
 		size ++;
 		for(int e = 1; e < spawn; e ++){
 			Vector2 temp;
@@ -109,6 +115,7 @@ public class Generator : MonoBehaviour {
 	}
 
 	void Gen(Vector2 point){
+		Debug.Log (point.x + " : " + point.y);
 		drawn [d_size] = point;
 		d_size ++;
 		if(d_size == drawn.Length){
@@ -136,8 +143,9 @@ public class Generator : MonoBehaviour {
 				run = false;
 				temp = new Vector2(Random.Range(point.x - 15, point.x + 15), Random.Range(point.y - 15, point.y + 15));
 				for(int a = 1; a <= e; a ++){
-					if(Vector2.Distance(temp, cannons[size - a].transform.position) < 2){
+					if(Vector2.Distance(temp, cannons[size - a].transform.position) < 3){
 						run = true;
+						break;
 					}
 				}
 			}
