@@ -42,39 +42,49 @@ public class Generator : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		int x_pos = (int) (player.transform.position.x);
-		int y_pos = (int)(player.transform.position.y);
-		if(x_pos % 8 == 0 && x_pos % 16 != 0){
+		int y_pos = (int) (player.transform.position.y);
+		if(x_pos % 8 == 0 && x_pos % 16 != 0 && (x_pos - (8 * Mathf.Sign (x_pos))) % 32 == 0){
 			cur_x = x_pos;
 		}
-		if(y_pos % 8 == 0 && y_pos % 16 != 0){
+		if(y_pos % 8 == 0 && y_pos % 16 != 0 && (y_pos - (8 * Mathf.Sign(y_pos))) % 32 == 0){
 			cur_y = y_pos;
 		}
-		if(x_pos % 8 == 0 && x_pos % 16 != 0 && cur_y != 0){
-			cur_x = x_pos;
-			Vector2 temp = new Vector2(x_pos + Mathf.Sign(x_pos) * 24, cur_y + Mathf.Sign(cur_y) * 24);
-			bool check = true;
-			foreach(Vector2 e in drawn){
-				if(e.Equals(temp)){
-					check = false;
-					break;
+		if (Mathf.Abs(x_pos) > Mathf.Abs(cur_x + (32 * Mathf.Sign (cur_x)))) {
+			cur_x += 32;
+		}
+		if (Mathf.Abs(y_pos) > Mathf.Abs(cur_y + (32 * Mathf.Sign(cur_y)))) {
+			cur_y += 32;
+		}
+		if(cur_x % 8 == 0 && cur_x % 16 != 0 && (cur_x - (8 * Mathf.Sign (cur_x))) % 32 == 0){
+			if(x_pos != 0 || cur_y != 0){
+				Vector2 temp = new Vector2(cur_x + Mathf.Sign(cur_x) * 24, cur_y + Mathf.Sign(cur_y) * 24);
+				bool check = true;
+				//Debug.Log("Check X: " + temp.x + " : " + temp.y);
+				for(int e = drawn.Length - 1; e >= 0; e --){
+					if(drawn[e].Equals(temp)){
+						check = false;
+						break;
+					}
 				}
-			}
-			if(check){
-				Gen (temp);
+				if(check){
+					Gen (temp);
+				}
 			}
 		}
-		if(y_pos % 8 == 0 && y_pos % 16 != 0 && cur_x != 0){
-			cur_y = y_pos;
-			Vector2 temp = new Vector2(cur_x + Mathf.Sign(cur_x) * 24, y_pos + Mathf.Sign(y_pos) * 24 );
-			bool check = true;
-			foreach(Vector2 e in drawn){
-				if(e.Equals(temp)){
-					check = false;
-					break;
+		if(cur_y % 8 == 0 && cur_y % 16 != 0 && (cur_y - (8 * Mathf.Sign(cur_y))) % 32 == 0){
+			if(cur_y != 0 || cur_x != 0){
+				Vector2 temp = new Vector2(cur_x + Mathf.Sign(cur_x) * 24, cur_y + Mathf.Sign(cur_y) * 24 );
+				bool check = true;
+				//Debug.Log("Check Y: " + temp.x + " : " + temp.y);
+				for(int e = drawn.Length - 1; e >= 0; e --){
+					if(drawn[e].Equals(temp)){
+						check = false;
+						break;
+					}
 				}
-			}
-			if(check){
-				Gen (temp);
+				if(check){
+					Gen (temp);
+				}
 			}
 		}
 
@@ -115,7 +125,7 @@ public class Generator : MonoBehaviour {
 	}
 
 	void Gen(Vector2 point){
-		Debug.Log (point.x + " : " + point.y);
+		//Debug.Log ("Gen: " + point.x + " : " + point.y);
 		drawn [d_size] = point;
 		d_size ++;
 		if(d_size == drawn.Length){
