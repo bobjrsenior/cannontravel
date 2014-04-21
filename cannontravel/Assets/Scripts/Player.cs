@@ -12,20 +12,36 @@ public class Player : MonoBehaviour {
 	public GUIText gui_text_prefab;
 	public GUITexture gui_texture_prefab;
 
-	//Stats/GUI Objects
-	private GUIText fires;
+	///Stats/GUI Objects
+	//Times fired from a cannon
+	private GUIText fire_gui;
 	public int fire_count;
+	//How High you are
 	private GUIText height_gui;
+	private GUIText money_gui;
+	//Money you have
+	private int money;
 
 	// Use this for initialization
 	void Start () {
-		fire_count = 0;
-		fires = Instantiate (gui_text_prefab, new Vector2 (.05f, .9f), Quaternion.identity) as GUIText;
-		fires.guiText.fontSize = 24;
+		//Create the initial GUI
 		height_gui = Instantiate (gui_text_prefab, new Vector2 (.05f, .97f), Quaternion.identity) as GUIText;
 		height_gui.guiText.fontSize = 24;
+		fire_count = 0;
+
+		fire_gui = Instantiate (gui_text_prefab, new Vector2 (.05f, .9f), Quaternion.identity) as GUIText;
+		fire_gui.guiText.fontSize = 24;
+
+		money_gui = Instantiate (gui_text_prefab, new Vector2 (.05f, .83f), Quaternion.identity) as GUIText;
+		money_gui.guiText.fontSize = 24;
+		money = 0;
+
+		//Set values totheir default
 		in_barrel = false;
 		barrel_fix = false;
+
+		//Draw the GUI (DOne last to make sure it avoids being called
+		//Before something is initialized/set
 		Update_GUI ();
 	}
 
@@ -53,6 +69,21 @@ public class Player : MonoBehaviour {
 			transform.position = cannon.transform.position;
 			transform.rotation = cannon.transform.rotation;
 		}
+		if(other.CompareTag("Gold_Coin")){
+			money += 50;
+			money_gui.guiText.text = "Money: $" + money;
+			Destroy(other.gameObject);
+		}
+		else if(other.CompareTag("Silver_Coin")){
+			money += 30;
+			money_gui.guiText.text = "Money: $" + money;
+			Destroy(other.gameObject);
+		}
+		else if(other.CompareTag("Bronze_Coin")){
+			money += 10;
+			money_gui.guiText.text = "Money: $" + money;
+			Destroy(other.gameObject);
+		}
 	}
 
 
@@ -77,7 +108,8 @@ public class Player : MonoBehaviour {
 	}
 
 	void Update_GUI(){
-		fires.guiText.text = "Times Fired: " + fire_count;
 		height_gui.guiText.text = "Height: " + (int) (transform.position.y);
+		fire_gui.guiText.text = "Times Fired: " + fire_count;
+		money_gui.guiText.text = "Money: $" + money;
 	}
 }
