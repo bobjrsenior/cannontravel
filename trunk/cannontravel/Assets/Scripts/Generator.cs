@@ -3,9 +3,13 @@ using System.Collections;
 
 public class Generator : MonoBehaviour {
 
-	//Prefab Reference
+	///Prefab Reference
 	public GameObject cannon;
 	public GameObject player_prefab;
+	//Items
+	public GameObject gold_coin;
+	public GameObject silver_coin;
+	public GameObject bronze_coin;
 
 	//In-game Player
 	private GameObject player;
@@ -14,6 +18,9 @@ public class Generator : MonoBehaviour {
 	private GameObject[] cannons = new GameObject[100];
 	//How many cannons are actually in the array
 	private int size;
+	private GameObject[] coins = new GameObject[20];
+	private int c_size;
+
 
 	//Procedural Stuff
 	private Vector2[] drawn = new Vector2[50];
@@ -21,10 +28,14 @@ public class Generator : MonoBehaviour {
 	private int cur_x;
 	private int cur_y;
 	//Draw Distance = hardcoded in begin/gen (every 32 units, 15 x 15 units in size)
+	//Cannons
 	private int max_cannons;
 
-	//Chance to spawn a cannon = hardcoded in gen/begin (.8f)
-
+	//Coins
+	private int max_coins;
+	//Type of Coin odds
+	private int gold = 9;
+	private int silver = 6;
 
 
 
@@ -33,7 +44,12 @@ public class Generator : MonoBehaviour {
 		Random.seed = (int)(System.DateTime.Now.Ticks);
 		size = 0;
 		d_size = 0;
+		c_size = 0;
 		max_cannons = 15;
+		max_coins = 10;
+		//Coin Chance
+		gold = 9;
+		silver = 6;
 		Begin ();
 	}
 	
@@ -103,7 +119,7 @@ public class Generator : MonoBehaviour {
 			bool run = false;
 			do{
 				run = false;
-				temp = new Vector2(Random.Range(-15, 15), Random.Range(-15, 15));
+				temp = new Vector2(Random.Range(-15f, 15f), Random.Range(-15f, 15f));
 				if(Vector2.Distance(temp, player.transform.position) < 2){
 					run = true;
 				}
@@ -118,6 +134,44 @@ public class Generator : MonoBehaviour {
 			while(run);
 			cannons[size] = Instantiate (cannon, temp, Quaternion.identity) as GameObject;
 			size ++;
+		}
+
+		//Coins
+		int c_spawn = 5;
+		for(int e = 0; e < c_spawn; e ++){
+			Vector2 temp;
+			bool run = false;
+			do{
+				run = false;
+				temp = new Vector2(Random.Range(-15f, 15f), Random.Range(-15f, 15f));
+				if(Vector2.Distance(temp, player.transform.position) < 2){
+					run = true;
+				}
+				else{
+					for(int a = 1; a <= e; a ++){
+						if(Vector2.Distance(temp, coins[c_size - a].transform.position) < 2){
+							run = true;
+						}
+					}
+					for(int a = 0; a <= spawn - 1; a ++){
+						if(Vector2.Distance(temp, cannons[size - a - 1].transform.position) < 2){
+							run = true;
+						}
+					}
+				}
+			}
+			while(run);
+			float coin_dec = Random.Range(1, 11);
+			if(coin_dec >= gold){
+				coins[c_size] = Instantiate (gold_coin, temp, Quaternion.identity) as GameObject;
+			}
+			else if(coin_dec >= silver){
+				coins[c_size] = Instantiate (silver_coin, temp, Quaternion.identity) as GameObject;
+			}
+			else{
+				coins[c_size] = Instantiate (bronze_coin, temp, Quaternion.identity) as GameObject;
+			}
+			c_size ++;
 		}
 
 	}
@@ -136,7 +190,7 @@ public class Generator : MonoBehaviour {
 		}
 		int spawn = 0;
 		for (int e = 0; e < max_cannons; e ++) {
-			if(chance > Random.Range(0, 1)){
+			if(chance > Random.Range(0f, 1f)){
 				spawn ++;
 			}
 		}
@@ -149,7 +203,7 @@ public class Generator : MonoBehaviour {
 			bool run = false;
 			do{
 				run = false;
-				temp = new Vector2(Random.Range(point.x - 15, point.x + 15), Random.Range(point.y - 15, point.y + 15));
+				temp = new Vector2(Random.Range(point.x - 15, point.x + 15), Random.Range(point.y - 16f, point.y + 16f));
 				for(int a = 1; a <= e; a ++){
 					if(Vector2.Distance(temp, cannons[size - a].transform.position) < 3){
 						run = true;
@@ -164,6 +218,55 @@ public class Generator : MonoBehaviour {
 				inc_cannons();
 			}
 		}
+
+		//Coins
+		int c_spawn = 0;
+		chance = .2f + .05f * (Vector2.Distance (Vector2.zero, point) / 16f);
+		if(chance > 1){
+			chance = 1;
+		}
+		for (int e = 0; e < max_coins; e ++) {
+			if(chance > Random.Range(0f, 10f)){
+				c_spawn ++;
+			}
+		}
+		for(int e = 0; e < c_spawn; e ++){
+			Vector2 temp;
+			bool run = false;
+			do{
+				run = false;
+				temp = new Vector2(Random.Range(-15, 15), Random.Range(-16f, 16f));
+				if(Vector2.Distance(temp, player.transform.position) < 2){
+					run = true;
+				}
+				else{
+					for(int a = 1; a <= e; a ++){
+						if(Vector2.Distance(temp, coins[c_size - a].transform.position) < 2){
+							run = true;
+						}
+					}
+					for(int a = 0; a <= spawn - 1; a ++){
+						if(Vector2.Distance(temp, cannons[size - a - 1].transform.position) < 2){
+							run = true;
+						}
+					}
+				}
+			}
+			while(run);
+			float coin_dec = Random.Range(1, 11);
+			if(coin_dec >= gold){
+				coins[c_size] = Instantiate (gold_coin, temp, Quaternion.identity) as GameObject;
+			}
+			else if(coin_dec >= silver){
+				coins[c_size] = Instantiate (silver_coin, temp, Quaternion.identity) as GameObject;
+			}
+			else{
+				coins[c_size] = Instantiate (bronze_coin, temp, Quaternion.identity) as GameObject;
+			}
+			c_size ++;
+		}
+
+
 	}
 
 	void inc_cannons(){
@@ -180,5 +283,27 @@ public class Generator : MonoBehaviour {
 			temp[e] = drawn[e];
 		}
 		drawn = temp;
+	}
+
+	void inc_coins(){
+		if (coins.Length % 40 == 0) {
+			cleanse_coins();
+		}
+		GameObject[] temp = new GameObject[coins.Length + 20];
+		for (int e = 0; e < coins.Length; e ++) {
+			temp[e] = coins[e];
+		}
+		coins = temp;
+	}
+
+	void cleanse_coins(){
+		for(int e = 0; e < c_size; e ++){
+			if(coins[e] == null){
+				for(int a = e; a < c_size - 1; a ++){
+					coins[a] = coins[a + 1];
+				}
+				c_size --;
+			}
+		}
 	}
 }
