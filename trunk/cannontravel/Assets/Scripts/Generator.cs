@@ -20,21 +20,19 @@ public class Generator : MonoBehaviour {
 	private int d_size;
 	private int cur_x;
 	private int cur_y;
-	private float draw_distance;
-	private float re_draw;
-
-	private float cannon_chance;
+	//Draw Distance = hardcoded in begin/gen (every 32 units, 15 x 15 units in size)
 	private int max_cannons;
-	
+
+	//Chance to spawn a cannon = hardcoded in gen/begin (.8f)
+
+
+
 
 	// Use this for initialization
 	void Start () {
 		Random.seed = (int)(System.DateTime.Now.Ticks);
 		size = 0;
 		d_size = 0;
-		draw_distance = 20f;
-		re_draw = 10f;
-		cannon_chance = .8f;
 		max_cannons = 15;
 		Begin ();
 	}
