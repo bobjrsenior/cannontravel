@@ -22,6 +22,15 @@ public class Player : MonoBehaviour {
 	//Money you have
 	private int money;
 
+	/////////Shop Stuff
+	//Length Space is held down
+	private float s_time;
+	private bool shop_up;
+	/// GUI
+	public Texture2D background;
+	/// Shop Interface
+
+
 	// Use this for initialization
 	void Start () {
 		//Create the initial GUI
@@ -40,6 +49,10 @@ public class Player : MonoBehaviour {
 		in_barrel = false;
 		barrel_fix = false;
 
+		///Shop Stuff
+		shop_up = false;
+		s_time = 0;
+
 		//Draw the GUI (DOne last to make sure it avoids being called
 		//Before something is initialized/set
 		Update_GUI ();
@@ -48,14 +61,26 @@ public class Player : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		height_gui.guiText.text = "Height: " + (int) (transform.position.y);
-		if (in_barrel) {
+		if (in_barrel && !shop_up) {
 			transform.position = cannon.transform.position;
 			transform.rotation = cannon.transform.rotation;
 			transform.Rotate(0, 0, -90);
 			rigidbody2D.velocity = new Vector2(0, 0);
 		}
-		else if(barrel_fix == true && Vector2.Distance(gameObject.transform.position, cannon.transform.position) > 2){
+		else if(!shop_up && barrel_fix == true && Vector2.Distance(gameObject.transform.position, cannon.transform.position) > 2){
 			barrel_fix = false;
+		}
+
+		if(Input.GetButton("Jump")){
+			s_time += Time.deltaTime;
+			if(s_time > .5f){
+				s_time = 0;
+				shop_up = true;
+				shop_on();
+			}
+		}
+		else{
+			s_time = 0;
 		}
 	}
 
@@ -111,5 +136,16 @@ public class Player : MonoBehaviour {
 		height_gui.guiText.text = "Height: " + (int) (transform.position.y);
 		fire_gui.guiText.text = "Times Fired: " + fire_count;
 		money_gui.guiText.text = "Money: $" + money;
+	}
+
+	void shop_on(){
+		//GUI.color = new Color(0, 0, 0, 1);
+		GUI.depth = -1000;
+		GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), background);
+
+	}
+
+	void shop_off (){
+
 	}
 }

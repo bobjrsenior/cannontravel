@@ -36,9 +36,7 @@ public class Generator : MonoBehaviour {
 	//Type of Coin odds
 	private int gold = 9;
 	private int silver = 6;
-
-
-
+	
 	// Use this for initialization
 	void Start () {
 		Random.seed = (int)(System.DateTime.Now.Ticks);
@@ -50,6 +48,7 @@ public class Generator : MonoBehaviour {
 		//Coin Chance
 		gold = 9;
 		silver = 6;
+
 		Begin ();
 	}
 	
@@ -101,7 +100,6 @@ public class Generator : MonoBehaviour {
 				}
 			}
 		}
-
 	}
 
 
@@ -194,8 +192,8 @@ public class Generator : MonoBehaviour {
 				spawn ++;
 			}
 		}
-		if(spawn == 0){
-			spawn = 1;
+		if(spawn < 3){
+			spawn = 3;
 		}
 
 		for(int e = 0; e < spawn; e ++){
@@ -229,6 +227,9 @@ public class Generator : MonoBehaviour {
 			if(chance > Random.Range(0f, 10f)){
 				c_spawn ++;
 			}
+		}
+		if(c_spawn < 2){
+			c_spawn = 2;
 		}
 		for(int e = 0; e < c_spawn; e ++){
 			Vector2 temp;
@@ -264,6 +265,9 @@ public class Generator : MonoBehaviour {
 				coins[c_size] = Instantiate (bronze_coin, temp, Quaternion.identity) as GameObject;
 			}
 			c_size ++;
+			if(c_size == coins.Length){
+				inc_coins();
+			}
 		}
 
 
@@ -286,9 +290,9 @@ public class Generator : MonoBehaviour {
 	}
 
 	void inc_coins(){
-		if (coins.Length % 40 == 0) {
+		/*if (coins.Length % 40 == 0) {
 			cleanse_coins();
-		}
+		}*/
 		GameObject[] temp = new GameObject[coins.Length + 20];
 		for (int e = 0; e < coins.Length; e ++) {
 			temp[e] = coins[e];
@@ -296,7 +300,7 @@ public class Generator : MonoBehaviour {
 		coins = temp;
 	}
 
-	void cleanse_coins(){
+	/*void cleanse_coins(){
 		for(int e = 0; e < c_size; e ++){
 			if(coins[e] == null){
 				for(int a = e; a < c_size - 1; a ++){
@@ -305,5 +309,5 @@ public class Generator : MonoBehaviour {
 				c_size --;
 			}
 		}
-	}
+	}*/
 }
