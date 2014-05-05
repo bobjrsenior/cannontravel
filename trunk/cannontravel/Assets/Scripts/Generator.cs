@@ -220,10 +220,10 @@ public class Generator : MonoBehaviour {
 
 		//Coins
 		int c_spawn = 0;
-		chance = 4f;//.2f;// + .05f * (Vector2.Distance (Vector2.zero, point) / 16f);
-		if(chance > 1){
-			chance = 1;
-		}
+		chance = 5f;//.2f;// + .05f * (Vector2.Distance (Vector2.zero, point) / 16f);
+		//if(chance > 1){
+		//	chance = 1;
+		//}
 		for (int e = 0; e < max_coins; e ++) {
 			if(chance > Random.Range(0f, 10f)){
 				c_spawn ++;
@@ -237,7 +237,7 @@ public class Generator : MonoBehaviour {
 			bool run = false;
 			do{
 				run = false;
-				temp = new Vector2(Random.Range(-15, 15), Random.Range(-16f, 16f));
+				temp = new Vector2(Random.Range(point.x - 15, point.x + 15), Random.Range(point.y - 16f, point.y + 16f));
 				if(Vector2.Distance(temp, player.transform.position) < 2){
 					run = true;
 				}

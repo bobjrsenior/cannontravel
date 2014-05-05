@@ -204,6 +204,12 @@ public class Player : MonoBehaviour {
 		height_gui.guiText.text = "Height: " + (int) (transform.position.y);
 		fire_gui.guiText.text = "Times Fired: " + fire_count;
 		money_gui.guiText.text = "Money: $" + money;
+		if(shop_up){
+			item_text [0].guiText.text = "Cannon Strength: " + cannon_multiply + " : Cost: " + prices[0];
+			item_text [1].guiText.text = "Cannon Density: " + gen.max_cannons + " : Cost: " + prices[1];
+			item_text [2].guiText.text = "Money Value: " + money_multiply + " : Cost: " + prices[2];
+			item_text [3].guiText.text = "Money Density: " + gen.max_coins + " : Cost: " + prices[3];
+		}
 	}
 
 	void shop_setup(){
@@ -246,6 +252,7 @@ public class Player : MonoBehaviour {
 		if(in_barrel){
 			cannon.SendMessage("Shop");
 		}
+		Update_GUI ();
 	}
 
 	void shop_off (){
