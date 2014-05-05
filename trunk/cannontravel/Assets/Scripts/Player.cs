@@ -29,8 +29,10 @@ public class Player : MonoBehaviour {
 	/////////Shop Stuff
 	//Length Space is held down
 	private float s_time;
+	private float item_time;
 	private bool shop_up;
 	private Vector2 vel_hold;
+	private float exit_timer;
 	/// GUI
 	public GUITexture background_prefab;
 	private GUITexture background;
@@ -41,8 +43,6 @@ public class Player : MonoBehaviour {
 	private GUIText[] item_text = new GUIText[4];
 	/// Shop Interface
 	private int selected_item;
-	//public ParticleSystem particle_prefab;
-	//private ParticleSystem[] particles = new ParticleSystem[2];
 	private Vector2[] system_pos = new Vector2[4];
 	/// Prices
 	private int[] prices = {80, 100, 130, 120};
@@ -59,6 +59,8 @@ public class Player : MonoBehaviour {
 		shop_setup();
 		shop_up = false;
 		s_time = 0;
+		item_time = 0;
+		exit_timer = 0;
 		selected_item = 0;
 
 		//Create the initial GUI
@@ -101,18 +103,47 @@ public class Player : MonoBehaviour {
 			barrel_fix = false;
 		}
 
-		if(Input.GetButton("Jump")){
+		if(!shop_up && Input.GetButton("Jump")){
 			s_time += Time.deltaTime;
 			if(s_time > .5f){
-				s_time = 0;
-				shop_up = true;
-				vel_hold = new Vector2(rigidbody2D.velocity.x, rigidbody2D.velocity.y);
-				rigidbody2D.velocity = Vector2.zero;
-				rigidbody2D.isKinematic = true;
 				shop_on();
-				if(in_barrel){
-					cannon.SendMessage("Shop");
+
+			}
+		}
+		else if(shop_up && Input.GetButton("Jump")){
+			if(Input.GetButtonDown("Jump")){
+				if(exit_timer == 0){
+					exit_timer = Time.time;
 				}
+				else{
+					if(exit_timer + .2f > Time.time){
+						shop_off();
+					}
+					else{
+						exit_timer = Time.time;
+					}
+				}
+			}
+			s_time += Time.deltaTime;
+			item_time = 0;
+			if(s_time > .5f){
+				if(money > prices[selected_item]){
+					bought_item();
+					s_time = 0;
+				}
+			}
+		}
+		else if(shop_up){
+			s_time = 0;
+			item_time += Time.deltaTime;
+			if(item_time >= 1){
+				item_time = 0;
+				item_border[selected_item].guiTexture.texture = item_border_unselected;
+				selected_item ++;
+				if(selected_item == item_text.Length){
+					selected_item  = 0;
+				}
+				item_border[selected_item].guiTexture.texture = item_border_selected;
 			}
 		}
 		else{
@@ -184,8 +215,6 @@ public class Player : MonoBehaviour {
 			item_text[e].guiText.text = "TEST";
 			item_border[e] = Instantiate(item_border_prefab, system_pos[e], Quaternion.identity) as GUITexture;
 		}
-		//particles[0] = Instantiate(particle_prefab, new Vector2(Screen.width * (system_pos[0].x + .1f), Screen.height * system_pos[0].y), Quaternion.identity) as ParticleSystem;
-		//particles[1] = Instantiate(particle_prefab, new Vector2(Screen.width * (system_pos[0].x - .1f), Screen.height * system_pos[0].y), Quaternion.identity) as ParticleSystem;
 
 		item_text [0].guiText.text = "Cannon Strength: " + cannon_multiply + " : Cost: " + prices[0];
 		item_text [1].guiText.text = "Cannon Density: " + gen.max_cannons + " : Cost: " + prices[1];
@@ -198,6 +227,14 @@ public class Player : MonoBehaviour {
 	}
 
 	void shop_on(){
+		s_time = 0;
+		item_time = 0;
+		exit_timer = 0;
+		shop_up = true;
+		vel_hold = new Vector2(rigidbody2D.velocity.x, rigidbody2D.velocity.y);
+		rigidbody2D.velocity = Vector2.zero;
+		rigidbody2D.isKinematic = true;
+
 		background.enabled = true;
 		for(int e = 0; e < item_border.Length; e ++){
 			item_border[e].enabled = true;
@@ -206,9 +243,50 @@ public class Player : MonoBehaviour {
 		selected_item = 0;
 		item_border [0].guiTexture.texture = item_border_selected;
 
+		if(in_barrel){
+			cannon.SendMessage("Shop");
+		}
 	}
 
 	void shop_off (){
+		s_time = 0;
+		item_time = 0;
+		exit_timer = 0;
+		item_border [selected_item].guiTexture.texture = item_border_unselected;
+		selected_item = 0;
+		rigidbody2D.velocity = vel_hold;
+		rigidbody2D.isKinematic = false;
+		shop_up = false;
+		if(in_barrel){
+			cannon.SendMessage("Shop");
+		}
+		else{
+			rigidbody2D.gravityScale = 1;
+		}
 
+		background.enabled = false;
+		for(int e = 0; e < item_border.Length; e ++){
+			item_border[e].enabled = false;
+			item_text[e].enabled = false;
+		}
+	}
+
+	void bought_item(){
+		money -= prices[selected_item];
+		prices[selected_item] += (int) (.2 * prices[selected_item]);
+
+		if(selected_item == 0){
+			cannon_multiply += .2f;
+		}
+		else if(selected_item == 1){
+			gen.max_cannons += 3;
+		}
+		else if(selected_item == 2){
+			money_multiply += .2f;
+		}
+		else if(selected_item == 3){
+			gen.max_coins += 2;
+		}
+		Update_GUI ();
 	}
 }
