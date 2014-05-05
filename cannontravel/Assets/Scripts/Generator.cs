@@ -220,7 +220,7 @@ public class Generator : MonoBehaviour {
 
 		//Coins
 		int c_spawn = 0;
-		chance = .4f;//.2f;// + .05f * (Vector2.Distance (Vector2.zero, point) / 16f);
+		chance = 4f;//.2f;// + .05f * (Vector2.Distance (Vector2.zero, point) / 16f);
 		if(chance > 1){
 			chance = 1;
 		}
