@@ -14,6 +14,8 @@ public class Generator : MonoBehaviour {
 	//In-game Player
 	private GameObject player;
 
+	//Cannons
+	public int max_cannons;
 	//Holds Cannons
 	private GameObject[] cannons = new GameObject[100];
 	//How many cannons are actually in the array
@@ -28,11 +30,10 @@ public class Generator : MonoBehaviour {
 	private int cur_x;
 	private int cur_y;
 	//Draw Distance = hardcoded in begin/gen (every 32 units, 15 x 15 units in size)
-	//Cannons
-	private int max_cannons;
+
 
 	//Coins
-	private int max_coins;
+	public int max_coins;
 	//Type of Coin odds
 	private int gold = 9;
 	private int silver = 6;
@@ -182,7 +183,7 @@ public class Generator : MonoBehaviour {
 			inc_draws();
 		}
 		int dist = (int) Vector2.Distance (Vector2.zero, point);
-		float chance = .8f - (.05f * dist / 16);
+		float chance = .8f;// - (.05f * dist / 16);
 		if(chance < .1){
 			chance = .1f;
 		}
@@ -219,7 +220,7 @@ public class Generator : MonoBehaviour {
 
 		//Coins
 		int c_spawn = 0;
-		chance = .2f + .05f * (Vector2.Distance (Vector2.zero, point) / 16f);
+		chance = .4f;//.2f;// + .05f * (Vector2.Distance (Vector2.zero, point) / 16f);
 		if(chance > 1){
 			chance = 1;
 		}
