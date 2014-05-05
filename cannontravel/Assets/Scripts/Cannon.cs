@@ -8,6 +8,7 @@ public class Cannon : MonoBehaviour {
 	private int dir;
 	private float rotate_speed;
 	private float strength;
+	private bool in_shop;
 
 	// Use this for initialization
 	void Start () {
@@ -16,11 +17,12 @@ public class Cannon : MonoBehaviour {
 		dir = (int) Mathf.Round(Random.Range (0, 1));
 		rotate_speed = Random.Range (80, 150);
 		strength = Random.Range(700, 1250);
+		in_shop = false;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if (has_player) {
+		if (has_player && !in_shop) {
 			if(dir == 1){
 				transform.Rotate(0, 0, rotate_speed * Time.deltaTime);
 			}
@@ -42,5 +44,9 @@ public class Cannon : MonoBehaviour {
 			has_player = true;
 			player = other.gameObject;
 		}
+	}
+
+	void Shop(){
+		in_shop = !in_shop;
 	}
 }
