@@ -3,10 +3,15 @@ using System.Collections;
 
 public class Player : MonoBehaviour {
 
+
+	//Gravity
+	private float gravity;
+	private float zero_height;
+
 	private GameObject gen_o;
 	private Generator gen;
 	//Cannon Stuff (Cannon = Barrel)
-	private float cannon_multiply;
+	public float cannon_multiply;
 	public bool in_barrel;
 	private GameObject cannon;
 	private bool barrel_fix;
@@ -52,6 +57,9 @@ public class Player : MonoBehaviour {
 		gen_o = GameObject.FindWithTag ("Generator");
 		gen = gen_o.GetComponent(typeof(Generator)) as Generator;
 
+		gravity = 1;
+		zero_height = 1000;
+
 		cannon_multiply = 1.0f;
 		money_multiply = 1.0f;
 
@@ -93,6 +101,13 @@ public class Player : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		height_gui.guiText.text = "Height: " + (int) (transform.position.y);
+		if(transform.position.y > 0 && !in_barrel){
+			gravity = 1 - (transform.position.y / zero_height);
+			rigidbody2D.gravityScale = gravity;
+			if(gravity < 0){
+				gravity = 0;
+			}
+		}
 		if (in_barrel && !shop_up) {
 			transform.position = cannon.transform.position;
 			transform.rotation = cannon.transform.rotation;
@@ -190,7 +205,7 @@ public class Player : MonoBehaviour {
 	void Fire(float strength){
 		strength *= cannon_multiply;
 		//rigidbody2D.isKinematic = false;
-		rigidbody2D.gravityScale = 1;
+		rigidbody2D.gravityScale = gravity;
 		float t1 = Mathf.Sin((transform.eulerAngles.z + 90) * Mathf.PI / 180f);
 		float t2 = Mathf.Cos((transform.eulerAngles.z + 90) * Mathf.PI / 180f);
 
@@ -268,7 +283,7 @@ public class Player : MonoBehaviour {
 			cannon.SendMessage("Shop");
 		}
 		else{
-			rigidbody2D.gravityScale = 1;
+			rigidbody2D.gravityScale = gravity;
 		}
 
 		background.enabled = false;
